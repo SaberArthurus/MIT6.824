@@ -12,7 +12,13 @@ func doReduce(
 	// files for the task, sort the intermediate key/value pairs by key,
 	// call the user-defined reduce function (reduceF) for each key, and
 	// write reduceF's output to disk.
-	//
+	
+	for m := 0; m < nMap; m ++ {
+		file = reduceName(jobName, m, reduceTask)
+		enc := json.NewEncoder(file)
+
+
+	}
 	// You'll need to read one intermediate file from each map task;
 	// reduceName(jobName, m, reduceTask) yields the file
 	// name from map task m.
