@@ -21,11 +21,12 @@ func doReduce(
 	// write reduceF's output to disk.
 	inputFiles := make([] *os.File, nMap)
 	for m := 0; m < nMap; m ++ {
-		file := reduceName(jobName, m, reduceTask)
-		inputFiles[m], _ = os.Open(file)
+		file_name := reduceName(jobName, m, reduceTask)
+		inputFiles[m], _ = os.Open(file_name)
 	}
 	intermediate_pair := make(map[string][]string)
 	for _, file := range inputFiles {
+		defer file.Close()
 		dec := json.NewDecoder(file)
 		var kv KeyValue
 		for {
@@ -35,10 +36,9 @@ func doReduce(
 			}
 			intermediate_pair[kv.Key] = append(intermediate_pair[kv.Key], kv.Value)
 		}
-
-		file.Close()
 	}
-	keys := make([]string, len(intermediate_pair))
+
+	keys := make([]string, 0, len(intermediate_pair))
 	for kv := range intermediate_pair {
 		keys = append(keys, kv)
 	}
@@ -50,11 +50,11 @@ func doReduce(
 	}
 	enc := json.NewEncoder(file)
 
+	defer file.Close()
 	for _, key := range(keys){
 		value := reduceF(key, intermediate_pair[key])
 		enc.Encode(KeyValue{key, value})
 	}
-	file.Close()
 
 	// You'll need to read one intermediate file from each map task;
 	// reduceName(jobName, m, reduceTask) yields the file
