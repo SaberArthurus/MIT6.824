@@ -1,8 +1,11 @@
 package mapreduce
 
 import (
-	"fmt"
 	"hash/fnv"
+	"log"
+	"encoding/json"
+	"os"
+	"io/ioutil"
 )
 
 func doMap(
@@ -21,7 +24,7 @@ func doMap(
 		log.Fatal(err)
 		return 
 	}
-	contents = string(data)
+	contents := string(data)
 	_kvmap := mapF(inFile, contents)
 	// There is one intermediate file per reduce task. The file name
 	// includes both the map task number and the reduce task number. Use
@@ -29,8 +32,8 @@ func doMap(
 	// as the intermediate file for reduce task r. Call ihash() (see
 	// below) on each key, mod nReduce, to pick r for a key/value pair.
 	for r := 0; r < nReduce; r ++ {
-		filename = reduceName(jobName, mapTask, r)
-		file, err = os.CreateFile(filename)
+		filename := reduceName(jobName, mapTask, r)
+		file, err := os.Create(filename)
 		if err != nil {
 			log.Fatal(err)
 
@@ -41,7 +44,9 @@ func doMap(
 				err := enc.Encode(&kv)
 				if err != nil {
 					log.Fatal(err)
+				
 				}
+				
 			}
 		}
 
