@@ -1,5 +1,5 @@
 # MIT6.824 (Distributed Systems)
-
+[lab description](https://pdos.csail.mit.edu/6.824/labs/lab-1.html)
 
 # Passed Lab4
 ```
